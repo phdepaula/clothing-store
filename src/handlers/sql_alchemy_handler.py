@@ -9,6 +9,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import create_database, database_exists
 
+from src.util.custom_error import CustomError
+
 
 class SqlAlchemyHandler:
     """
@@ -21,18 +23,32 @@ class SqlAlchemyHandler:
         """
         Initializes the SqlAlchemyHandler with the given database URL.
         """
-        self._engine = create_engine(
-            database_url, echo=False, connect_args={"check_same_thread": False}
-        )
+        try:
+            self._engine = create_engine(
+                database_url,
+                echo=False,
+                connect_args={"check_same_thread": False},
+            )
+        except Exception as e:
+            message = f"Error creating engine with database URL {database_url}: {str(e)}"
+            code = 1
+
+            raise CustomError(message, code) from e
 
     def create_all_metadata(self) -> None:
         """
         Creates all tables in the database based on the defined metadata.
         If the database does not exist, it will be created.
         """
-        db_url = self._engine.url
+        try:
+            db_url = self._engine.url
 
-        if not database_exists(db_url):
-            create_database(db_url)
+            if not database_exists(db_url):
+                create_database(db_url)
 
-        self.BASE.metadata.create_all(self._engine)
+            self.BASE.metadata.create_all(self._engine)
+        except Exception as e:
+            message = f"Error creating database tables: {str(e)}"
+            code = 2
+
+            raise CustomError(message, code) from e
