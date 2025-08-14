@@ -4,7 +4,7 @@ Module for building routes in a FastAPI application.
 
 # pylint: disable=R0913,R0917
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable, Dict, List
 
 from fastapi import APIRouter, Depends
@@ -35,7 +35,6 @@ class Route(ABC):
         fast_api_instance: FastApiHandler,
         jwt_instance: JwtHandler,
         name: str,
-        endpoints: Dict[str, Dict],
         dependencies: List[Callable] = None,
     ):
         """
@@ -44,7 +43,6 @@ class Route(ABC):
         self.fast_api_instance = fast_api_instance
         self.jwt_instance = jwt_instance
         self.name = name
-        self.endpoints = endpoints
         self.dependencies = [] if dependencies is None else dependencies
         self.route_app = self._create_app()
 
@@ -117,12 +115,21 @@ class Route(ABC):
         """
         Abstract method to build routes. Must be implemented by subclasses.
         """
-        for routes_detail in self.endpoints.values():
+        endpoints = self._get_endpoints()
+
+        for routes_detail in endpoints.values():
             self._create_route(
                 path=routes_detail[self.PATH],
                 http_type=routes_detail[self.HTTP_TYPE],
-                method=getattr(self, routes_detail[self.METHOD]),
+                method=routes_detail[self.METHOD],
                 response_model=routes_detail.get(self.MODEL, None),
             )
 
         self.fast_api_instance.include_router(self.route_app)
+
+    @abstractmethod
+    def _get_endpoints(self) -> Dict:
+        """
+        Abstract method to get the endpoints of the route.
+        Must be implemented by subclasses.
+        """
