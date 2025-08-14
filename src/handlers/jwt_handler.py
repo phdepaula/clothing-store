@@ -7,8 +7,6 @@ This class provides methods to create and verify JWT tokens for user authenticat
 from datetime import datetime, timedelta
 from typing import Dict
 
-from fastapi import Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTError
 
@@ -69,27 +67,5 @@ class JwtHandler:
         except Exception as e:
             message = f"Error decoding JWT token: {str(e)}"
             code = 33
-
-            raise CustomError(message, code) from e
-
-    def token_dependency(
-        self, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())
-    ) -> Dict:
-        """
-        Dependency to extract and decode the JWT token from the HTTP authorization credentials.
-        Raises CustomError if no token is provided or if the token is invalid.
-        """
-        try:
-            token = credentials.credentials if credentials else None
-
-            if not token:
-                raise CustomError("No token provided", 34)
-
-            payload = self.decode_jwt(token)
-
-            return payload
-        except CustomError as e:
-            message = f"Error in token_dependency: {str(e)}"
-            code = 35
 
             raise CustomError(message, code) from e
