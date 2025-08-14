@@ -10,16 +10,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import create_database, database_exists
 
 
-class SQLAlchemyHandler:
+class SqlAlchemyHandler:
     """
-    SQLAlchemyHandler is responsible for managing the SQLAlchemy session and engine.
+    SqlAlchemyHandler is responsible for managing the SQLAlchemy session and engine.
     """
 
     BASE = declarative_base()
 
     def __init__(self, database_url: str):
         """
-        Initializes the SQLAlchemyHandler with the given database URL.
+        Initializes the SqlAlchemyHandler with the given database URL.
         """
         self._engine = create_engine(
             database_url, echo=False, connect_args={"check_same_thread": False}

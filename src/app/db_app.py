@@ -6,10 +6,10 @@ import os
 
 from dotenv import load_dotenv
 
-from src.handlers.sql_alchemy_handler import SQLAlchemyHandler
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 
 # Load environment variables from a .env file
 load_dotenv()
 
 DB_URL = os.getenv("DB_URL")
-DB_APP = SQLAlchemyHandler(database_url=DB_URL)
+DB_APP = SqlAlchemyHandler(database_url=DB_URL)
