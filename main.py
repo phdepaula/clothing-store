@@ -6,9 +6,13 @@ This script initializes the application and starts the main event loop.
 # pylint: disable=W0611
 
 from src.app.db_app import DB_APP
+from src.app.fast_api_app import fast_api_instance
 from src.tables.products import Products
 from src.tables.users import Users
 
 if __name__ == "__main__":
     # Create database application
     DB_APP.create_all_metadata()
+
+    # Run the FastAPI application
+    fast_api_instance.run_app()
