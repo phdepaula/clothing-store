@@ -6,7 +6,10 @@ from src.app.db_app import DB_APP
 from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
 from src.routes.route import Route
-from src.schemas.users.users import RegisterUserSchema
+from src.schemas.users.users import (
+    RegisterUserResponseSchema,
+    RegisterUserSchema,
+)
 from src.tables.users import Users
 
 
@@ -18,9 +21,10 @@ class UserRoute(Route):
     NAME = "users"
     ENDPOINTS = {
         "register_user": {
-            "path": "/register_user",
-            "http_type": Route.POST,
-            "method": "register_user",
+            Route.PATH: "/register_user",
+            Route.HTTP_TYPE: Route.POST,
+            Route.METHOD: "register_user",
+            Route.MODEL: RegisterUserResponseSchema,
         }
     }
 
@@ -36,7 +40,7 @@ class UserRoute(Route):
 
     async def register_user(self, form: RegisterUserSchema):
         """
-        Method to register a user.
+        Route to register a user.
 
         **Parameters:**
         - username: str - The username of the user.

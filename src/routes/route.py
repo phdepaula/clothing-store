@@ -9,6 +9,7 @@ from typing import Callable, Dict, List
 
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
 
 from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
@@ -24,6 +25,10 @@ class Route(ABC):
     POST = "POST"
     PUT = "PUT"
     DELETE = "DELETE"
+    PATH = "path"
+    HTTP_TYPE = "http_type"
+    METHOD = "method"
+    MODEL = "model"
 
     def __init__(
         self,
@@ -63,6 +68,7 @@ class Route(ABC):
         path: str,
         http_type: str,
         method: Callable,
+        response_model: BaseModel = None,
     ):
         """
         Creates a route based on the type specified.
@@ -70,6 +76,9 @@ class Route(ABC):
         try:
             tag_name = self.name.title()
             kwargs = {"tags": [tag_name]}
+
+            if response_model:
+                kwargs["response_model"] = response_model
 
             self.route_app.add_api_route(
                 path=path,
@@ -110,9 +119,10 @@ class Route(ABC):
         """
         for routes_detail in self.endpoints.values():
             self._create_route(
-                path=routes_detail["path"],
-                http_type=routes_detail["http_type"],
-                method=getattr(self, routes_detail["method"]),
+                path=routes_detail[self.PATH],
+                http_type=routes_detail[self.HTTP_TYPE],
+                method=getattr(self, routes_detail[self.METHOD]),
+                response_model=routes_detail.get(self.MODEL, None),
             )
 
         self.fast_api_instance.include_router(self.route_app)
