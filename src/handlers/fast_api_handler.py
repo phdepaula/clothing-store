@@ -10,7 +10,7 @@ It includes methods for setting up routes and initializing the application.
 from typing import Callable, List
 
 import uvicorn
-from fastapi import APIRouter, Depends, FastAPI
+from fastapi import APIRouter, Depends, FastAPI, HTTPException
 
 from src.util.custom_error import CustomError
 
@@ -30,7 +30,7 @@ class FastApiHandler:
         self.port = port
         self.app = None
 
-    def create_app(self) -> FastAPI:
+    def create_app(self) -> None:
         """
         Create and return a FastAPI application instance.
         """
@@ -42,19 +42,17 @@ class FastApiHandler:
                 docs_url="/",
                 redoc_url=None,
             )
-
-            return self.app
         except Exception as e:
             message = f"Error creating FastAPI application: {str(e)}"
             code = 20
 
             raise CustomError(message, code) from e
 
-    def include_router(
-        self, prefix: str, dependencies: List[Callable]
+    def create_router(
+        self, prefix: str, dependencies: List[Callable] = None
     ) -> APIRouter:
         """
-        Include a router in the FastAPI application.
+        Create and return a FastAPI router with the specified prefix and dependencies.
         """
         try:
             if self.app is None:
@@ -64,16 +62,31 @@ class FastApiHandler:
 
             protected_router = APIRouter(
                 prefix=prefix,
-                dependencies=self._generate_dependencies(dependencies),
+                dependencies=(
+                    []
+                    if not dependencies
+                    else self._generate_dependencies(dependencies)
+                ),
             )
-            self.app.include_router(protected_router)
 
             return protected_router
+        except Exception as e:
+            message = f"Error creating router: {str(e)}"
+            code = 21
+
+            raise CustomError(message, code) from e
+
+    def include_router(self, api_route: APIRouter) -> None:
+        """
+        Include a router in the FastAPI application.
+        """
+        try:
+            self.app.include_router(api_route)
         except Exception as e:
             message = (
                 f"Error including router in FastAPI application: {str(e)}"
             )
-            code = 21
+            code = 22
 
             raise CustomError(message, code) from e
 
@@ -87,7 +100,7 @@ class FastApiHandler:
             return [Depends(dep) for dep in dependencies]
         except Exception as e:
             message = f"Error generating dependencies: {str(e)}"
-            code = 22
+            code = 23
 
             raise CustomError(message, code) from e
 
@@ -104,6 +117,14 @@ class FastApiHandler:
             uvicorn.run(self.app, host=self.host, port=self.port)
         except Exception as e:
             message = f"Error running FastAPI application: {str(e)}"
-            code = 23
+            code = 24
 
             raise CustomError(message, code) from e
+
+    def raise_http_exception(
+        self, detail: str, status_code: int = 500
+    ) -> HTTPException:
+        """
+        Raise an HTTPException with the specified status code and detail.
+        """
+        raise HTTPException(status_code=status_code, detail=detail)
