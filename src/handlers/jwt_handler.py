@@ -25,7 +25,9 @@ class JwtHandler:
         self.secret_key = secret_key
         self.algorithm = algorithm
 
-    def create_access_token(self, data: Dict, minutes_to_expire: int) -> str:
+    def create_access_token(
+        self, data: Dict, minutes_to_expire: int = 15
+    ) -> str:
         """
         Creates a JWT access token with the given data and expiration time.
         """
