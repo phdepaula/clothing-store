@@ -9,6 +9,8 @@ from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
 from src.routes.route import Route
 from src.schemas.users.users import (
+    LoginUserResponseSchema,
+    LoginUserSchema,
     RegisterUserResponseSchema,
     RegisterUserSchema,
 )
@@ -38,17 +40,64 @@ class UserRoute(Route):
         Method to get the endpoints of the UserRoute class.
         """
         endpoints = {
+            "login_user": {
+                Route.PATH: "/login_user",
+                Route.HTTP_TYPE: Route.POST,
+                Route.METHOD: self.login_user,
+                Route.MODEL: LoginUserResponseSchema,
+            },
             "register_user": {
                 Route.PATH: "/register_user",
                 Route.HTTP_TYPE: Route.POST,
                 Route.METHOD: self.register_user,
                 Route.MODEL: RegisterUserResponseSchema,
-            }
+            },
         }
 
         return endpoints
 
-    async def register_user(self, form: RegisterUserSchema):
+    async def login_user(self, form: LoginUserSchema) -> Dict:
+        """
+        Route to log in a user.
+
+        **Parameters:**
+        - username: str - The username of the user.
+        - password: str - The password of the user.
+
+        **Returns:**
+        - A JSON response with a success message and an access token.
+        """
+        try:
+            username = form.username
+            password = form.password
+
+            if not username or not password:
+                raise ValueError("Username and password are required.")
+
+            user_record = DB_APP.select_data(Users, username=username)
+
+            if not user_record:
+                raise ValueError("Invalid username.")
+
+            password_valid = self.hash_generator.verify_password(
+                password, user_record[0].password
+            )
+
+            if not password_valid:
+                raise ValueError("Invalid password.")
+
+            access_token = self.jwt_instance.create_access_token(
+                data={"sub": username}
+            )
+
+            return {
+                "message": "User logged in successfully.",
+                "access_token": access_token,
+            }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def register_user(self, form: RegisterUserSchema) -> Dict:
         """
         Route to register a user.
 
@@ -83,7 +132,7 @@ class UserRoute(Route):
             DB_APP.insert_data(new_user)
 
             return {
-                "message": "User registered successfully",
+                "message": "User registered successfully.",
                 "access_token": access_token,
             }
         except Exception as e:

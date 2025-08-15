@@ -34,3 +34,30 @@ class RegisterUserResponseSchema(BaseModel):
     access_token: str = Field(
         ..., description="JWT access token for the registered user"
     )
+
+
+class LoginUserSchema(BaseModel):
+    """
+    Schema for user login.
+    """
+
+    username: str = Field(
+        ..., max_length=50, description="Username of the user"
+    )
+    password: str = Field(
+        ..., max_length=100, description="Password for the user"
+    )
+
+
+class LoginUserResponseSchema(BaseModel):
+    """
+    Schema for the response after user login.
+    """
+
+    message: str = Field(
+        "User logged in successfully.",
+        description="Confirmation message after successful login",
+    )
+    access_token: str = Field(
+        ..., description="JWT access token for the logged-in user"
+    )
