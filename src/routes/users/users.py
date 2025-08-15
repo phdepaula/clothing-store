@@ -18,7 +18,7 @@ from src.tables.users import Users
 from src.util.hash_generator import HashGenerator
 
 
-class UserRoute(Route):
+class UsersRoute(Route):
     """
     Class to define and manage user-related routes for the FastAPI application.
     """
@@ -29,7 +29,7 @@ class UserRoute(Route):
         self, fast_api_instance: FastApiHandler, jwt_instance: JwtHandler
     ):
         """
-        Initializes the UserRoute class.
+        Initializes the UsersRoute class.
         """
         super().__init__(fast_api_instance, jwt_instance, self.NAME)
 
@@ -37,7 +37,7 @@ class UserRoute(Route):
 
     def _get_endpoints(self) -> Dict:
         """
-        Method to get the endpoints of the UserRoute class.
+        Method to get the endpoints of the UsersRoute class.
         """
         endpoints = {
             "login_user": {
