@@ -5,7 +5,9 @@ This class provides methods to interact with the database using SQLAlchemy ORM.
 It includes methods for creating, reading, updating, and deleting records in the database.
 """
 
-from sqlalchemy import create_engine
+from typing import List
+
+from sqlalchemy import and_, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
@@ -99,6 +101,97 @@ class SqlAlchemyHandler:
 
             message = f"Error inserting data: {str(e)}"
             code = 4
+
+            raise CustomError(message, code) from e
+        finally:
+            self._close_session()
+
+    def select_data(
+        self,
+        model: object,
+        order_by: str = None,
+        order_desc: bool = False,
+        **filters,
+    ) -> List:
+        """
+        Selects data from the database with flexible filters and ordering.
+
+        Filters:
+            attr=value           -> Equal to
+            attr__eq=value       -> Equal to
+            attr__gt=value       -> Greater than
+            attr__lt=value       -> Less than
+            attr__ge=value       -> Greater than or equal to
+            attr__le=value       -> Less than or equal to
+            attr__like=value     -> LIKE '%value%'
+
+        Ordering:
+            order_by="column"    -> Order by the specified column
+            order_desc=True      -> Descending order
+
+        Example:
+            select_data(User, name__like="Ped", age__gt=18, order_by="age", order_desc=True)
+        """
+        # pylint: disable=R0914,R0912
+        self._create_session()
+
+        try:
+            query = self._session.query(model)
+            conditions = []
+
+            # Build filters
+            for key, value in filters.items():
+                if "__" in key:
+                    attr, op = key.split("__", 1)
+                else:
+                    attr, op = key, "eq"
+
+                if not hasattr(model, attr):
+                    raise ValueError(
+                        f"Attribute '{attr}' does not exist in model '{model.__name__}'."
+                    )
+
+                column = getattr(model, attr)
+
+                if op == "eq":
+                    conditions.append(column == value)
+                elif op == "gt":
+                    conditions.append(column > value)
+                elif op == "lt":
+                    conditions.append(column < value)
+                elif op == "ge":
+                    conditions.append(column >= value)
+                elif op == "le":
+                    conditions.append(column <= value)
+                elif op == "like":
+                    conditions.append(column.like(f"%{value}%"))
+                else:
+                    raise ValueError(f"Operator '{op}' is not supported.")
+
+            # Apply filters
+            if conditions:
+                query = query.filter(and_(*conditions))
+
+            # Apply ordering
+            if order_by:
+                if not hasattr(model, order_by):
+                    raise ValueError(
+                        f"Attribute '{order_by}' does not exist in model '{model.__name__}'."
+                    )
+
+                column_order = getattr(model, order_by)
+
+                if order_desc:
+                    column_order = column_order.desc()
+
+                query = query.order_by(column_order)
+
+            return query.all()
+        except Exception as e:
+            self._session.rollback()
+
+            message = f"Error selecting data: {str(e)}"
+            code = 5
 
             raise CustomError(message, code) from e
         finally:
