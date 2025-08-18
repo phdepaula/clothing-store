@@ -9,6 +9,8 @@ from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
 from src.routes.route import Route
 from src.schemas.products.products import (
+    DeleteProductsResponseSchema,
+    DeleteProductsSchema,
     GetProductsByCategoryResponseSchema,
     RegisterProductsResponseSchema,
     RegisterProductsSchema,
@@ -60,6 +62,12 @@ class ProductsRoute(Route):
                 Route.HTTP_TYPE: Route.PUT,
                 Route.METHOD: self._update_product,
                 Route.MODEL: UpdateProductsResponseSchema,
+            },
+            "delete_product": {
+                Route.PATH: "/delete_product",
+                Route.HTTP_TYPE: Route.DELETE,
+                Route.METHOD: self._delete_product,
+                Route.MODEL: DeleteProductsResponseSchema,
             },
         }
 
@@ -175,6 +183,33 @@ class ProductsRoute(Route):
 
             return {
                 "message": f"Product {product_id} updated successfully.",
+            }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def _delete_product(self, form: DeleteProductsSchema) -> Dict:
+        """
+        Route to delete a product.
+
+        **Parameters:**
+        - product_id: int - The id of the product.
+
+        **Returns:**
+        - A JSON response with a success message.
+        """
+        try:
+            product_id = form.product_id
+
+            if not product_id:
+                raise ValueError("Product id should be informed.")
+
+            DB_APP.delete_data_table(
+                Products,
+                {Products.id: product_id},
+            )
+
+            return {
+                "message": f"Product {product_id} deleted successfully.",
             }
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))

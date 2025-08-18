@@ -76,3 +76,22 @@ class UpdateProductsResponseSchema(BaseModel):
         "Product updated successfully.",
         description="Confirmation message after successful update.",
     )
+
+
+class DeleteProductsSchema(BaseModel):
+    """
+    Schema for deleting a product.
+    """
+
+    product_id: int = Field(description="The id of the product.")
+
+
+class DeleteProductsResponseSchema(BaseModel):
+    """
+    Schema for the response after deleting a product.
+    """
+
+    message: str = Field(
+        "Product deleted successfully.",
+        description="Confirmation message after successful delete.",
+    )
