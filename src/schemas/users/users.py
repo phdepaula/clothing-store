@@ -61,3 +61,31 @@ class LoginUserResponseSchema(BaseModel):
     access_token: str = Field(
         ..., description="JWT access token for the logged-in user"
     )
+
+
+class UpdateUserSchema(BaseModel):
+    """
+    Schema for update user.
+    """
+
+    username: str = Field(
+        ..., max_length=50, description="Username of the user"
+    )
+    new_role: str = Field(
+        ...,
+        description="New role of the user, either 'admin' or 'user'",
+    )
+    new_password: str = Field(
+        ..., max_length=100, description="New password for the user"
+    )
+
+
+class UpdateUserResponseSchema(BaseModel):
+    """
+    Schema for the response after updating a user.
+    """
+
+    message: str = Field(
+        "User updated successfully.",
+        description="Confirmation message after successful update",
+    )

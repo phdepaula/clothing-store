@@ -13,6 +13,8 @@ from src.schemas.users.users import (
     LoginUserSchema,
     RegisterUserResponseSchema,
     RegisterUserSchema,
+    UpdateUserResponseSchema,
+    UpdateUserSchema,
 )
 from src.tables.users import Users
 from src.util.hash_generator import HashGenerator
@@ -43,20 +45,27 @@ class UsersRoute(Route):
             "login_user": {
                 Route.PATH: "/login_user",
                 Route.HTTP_TYPE: Route.POST,
-                Route.METHOD: self.login_user,
+                Route.METHOD: self._login_user,
                 Route.MODEL: LoginUserResponseSchema,
             },
             "register_user": {
                 Route.PATH: "/register_user",
                 Route.HTTP_TYPE: Route.POST,
-                Route.METHOD: self.register_user,
+                Route.METHOD: self._register_user,
                 Route.MODEL: RegisterUserResponseSchema,
+            },
+            "update_user": {
+                Route.PATH: "/update_user",
+                Route.HTTP_TYPE: Route.PUT,
+                Route.METHOD: self._update_user,
+                Route.MODEL: UpdateUserResponseSchema,
+                Route.DEPENDENCIES: [self._token_dependency],
             },
         }
 
         return endpoints
 
-    async def login_user(self, form: LoginUserSchema) -> Dict:
+    async def _login_user(self, form: LoginUserSchema) -> Dict:
         """
         Route to log in a user.
 
@@ -97,7 +106,7 @@ class UsersRoute(Route):
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))
 
-    async def register_user(self, form: RegisterUserSchema) -> Dict:
+    async def _register_user(self, form: RegisterUserSchema) -> Dict:
         """
         Route to register a user.
 
@@ -135,5 +144,44 @@ class UsersRoute(Route):
                 "message": "User registered successfully.",
                 "access_token": access_token,
             }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def _update_user(self, form: UpdateUserSchema) -> Dict:
+        """
+        Route to update a user.
+
+        **Parameters:**
+        - username: str - The username of the user.
+        - new_role: str - The new role of the user (e.g., 'admin', 'user').
+        - new_password: str - The new password of the user.
+
+        **Returns:**
+        - A JSON response with a success message.
+        """
+        try:
+            username = form.username
+            new_role = form.new_role
+            new_password = form.new_password
+
+            if not all([username, new_role, new_password]):
+                raise ValueError(
+                    "Username, new password, and nw role are required."
+                )
+
+            if new_role not in ["admin", "user"]:
+                raise ValueError("Role must be either 'admin' or 'user'.")
+
+            hashed_password = self.hash_generator.get_password_hash(
+                new_password
+            )
+
+            DB_APP.update_data_table(
+                Users,
+                {Users.username: username},
+                {Users.role: new_role, Users.password: hashed_password},
+            )
+
+            return {"message": f"User {username} updated successfully."}
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))
