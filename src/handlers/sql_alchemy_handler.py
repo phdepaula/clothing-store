@@ -5,7 +5,7 @@ This class provides methods to interact with the database using SQLAlchemy ORM.
 It includes methods for creating, reading, updating, and deleting records in the database.
 """
 
-from typing import List
+from typing import Dict, List
 
 from sqlalchemy import and_, create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -192,6 +192,86 @@ class SqlAlchemyHandler:
 
             message = f"Error selecting data: {str(e)}"
             code = 5
+
+            raise CustomError(message, code) from e
+        finally:
+            self._close_session()
+
+    def _create_filter(self, filter_parameters: Dict) -> List:
+        """
+        Method responsible for creating a filter
+        """
+
+        desired_filter = [
+            column == value for column, value in filter_parameters.items()
+        ]
+
+        return desired_filter
+
+    def update_data_table(
+        self, table: object, filter_update: Dict, new_data: Dict
+    ) -> int:
+        """
+        Updates data in the given table based on filters.
+
+        Args:
+            table (object): SQLAlchemy model representing the table.
+            filter_update (dict): Conditions to filter the rows to update.
+            new_data (dict): Columns and new values to set.
+
+        Returns:
+            int: Number of rows updated.
+        """
+        self._create_session()
+
+        try:
+            desired_filter = self._create_filter(filter_update)
+
+            rows_updated = (
+                self._session.query(table)
+                .filter(*desired_filter)
+                .update(new_data)
+            )
+            self._session.commit()
+
+            return rows_updated
+        except Exception as e:
+            self._session.rollback()
+
+            message = f"Error updating data: {str(e)}"
+            code = 6
+
+            raise CustomError(message, code) from e
+        finally:
+            self._close_session()
+
+    def delete_data_table(self, table: object, filter_delete: dict) -> int:
+        """
+        Deletes data from the given table based on filters.
+
+        Args:
+            table (object): SQLAlchemy model representing the table.
+            filter_delete (dict): Conditions to filter the rows to delete.
+
+        Returns:
+            int: Number of rows deleted.
+        """
+        self._create_session()
+
+        try:
+            desired_filter = self._create_filter(filter_delete)
+
+            rows_deleted = (
+                self._session.query(table).filter(*desired_filter).delete()
+            )
+            self._session.commit()
+
+            return rows_deleted
+        except Exception as e:
+            self._session.rollback()
+
+            message = f"Error deleting data: {str(e)}"
+            code = 7
 
             raise CustomError(message, code) from e
         finally:
