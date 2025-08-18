@@ -29,6 +29,7 @@ class Route(ABC):
     HTTP_TYPE = "http_type"
     METHOD = "method"
     MODEL = "model"
+    DEPENDENCIES = "dependencies"
 
     def __init__(
         self,
@@ -67,6 +68,7 @@ class Route(ABC):
         http_type: str,
         method: Callable,
         response_model: BaseModel = None,
+        dependencies: List[Callable] = None,
     ):
         """
         Creates a route based on the type specified.
@@ -77,6 +79,11 @@ class Route(ABC):
 
             if response_model:
                 kwargs["response_model"] = response_model
+
+            if dependencies:
+                kwargs["dependencies"] = (
+                    self.fast_api_instance.generate_dependencies(dependencies)
+                )
 
             self.route_app.add_api_route(
                 path=path,
@@ -123,6 +130,7 @@ class Route(ABC):
                 http_type=routes_detail[self.HTTP_TYPE],
                 method=routes_detail[self.METHOD],
                 response_model=routes_detail.get(self.MODEL, None),
+                dependencies=routes_detail.get(self.DEPENDENCIES, None),
             )
 
         self.fast_api_instance.include_router(self.route_app)
