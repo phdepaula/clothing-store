@@ -2,6 +2,8 @@
 Schema for product data validation in a clothing store application.
 """
 
+from typing import List
+
 from pydantic import BaseModel, Field
 
 
@@ -32,3 +34,15 @@ class RegisterProductsResponseSchema(BaseModel):
         "Product registered successfully.",
         description="Confirmation message after successful product registration",
     )
+
+
+class GetProductsByCategoryResponseSchema(BaseModel):
+    """
+    Schema for the response after getting a product.
+    """
+
+    message: str = Field(
+        "Products successfully obtained!",
+        description="Confirmation message returned when products are retrieved successfully.",
+    )
+    products: List = Field(description="List of all products in the category")

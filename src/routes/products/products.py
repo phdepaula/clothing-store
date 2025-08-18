@@ -9,6 +9,7 @@ from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
 from src.routes.route import Route
 from src.schemas.products.products import (
+    GetProductsByCategoryResponseSchema,
     RegisterProductsResponseSchema,
     RegisterProductsSchema,
 )
@@ -45,6 +46,12 @@ class ProductsRoute(Route):
                 Route.HTTP_TYPE: Route.POST,
                 Route.METHOD: self._register_product,
                 Route.MODEL: RegisterProductsResponseSchema,
+            },
+            "get_products_by_category": {
+                Route.PATH: "/get_products_by_category",
+                Route.HTTP_TYPE: Route.GET,
+                Route.METHOD: self._get_products_by_category,
+                Route.MODEL: GetProductsByCategoryResponseSchema,
             },
         }
 
@@ -85,6 +92,36 @@ class ProductsRoute(Route):
 
             return {
                 "message": "Product registered successfully.",
+            }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def _get_products_by_category(
+        self,
+        category: str = FastApiHandler.get_query_parameter(
+            "Category of the product"
+        ),
+    ) -> Dict:
+        """
+        Route to get products.
+
+        **Parameters:**
+        - category: str - The category of the product.
+
+        **Returns:**
+        - A JSON response with all products for informed category.
+        """
+        try:
+            if not category:
+                raise ValueError("Category should be informed.")
+
+            products = DB_APP.select_data(
+                Products, category__eq=category.title()
+            )
+
+            return {
+                "message": "Products successfully obtained!",
+                "products": products,
             }
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))
