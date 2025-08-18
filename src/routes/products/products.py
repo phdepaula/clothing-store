@@ -12,6 +12,8 @@ from src.schemas.products.products import (
     GetProductsByCategoryResponseSchema,
     RegisterProductsResponseSchema,
     RegisterProductsSchema,
+    UpdateProductsResponseSchema,
+    UpdateProductsSchema,
 )
 from src.tables.products import Products
 
@@ -52,6 +54,12 @@ class ProductsRoute(Route):
                 Route.HTTP_TYPE: Route.GET,
                 Route.METHOD: self._get_products_by_category,
                 Route.MODEL: GetProductsByCategoryResponseSchema,
+            },
+            "update_product": {
+                Route.PATH: "/update_product",
+                Route.HTTP_TYPE: Route.PUT,
+                Route.METHOD: self._update_product,
+                Route.MODEL: UpdateProductsResponseSchema,
             },
         }
 
@@ -122,6 +130,51 @@ class ProductsRoute(Route):
             return {
                 "message": "Products successfully obtained!",
                 "products": products,
+            }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def _update_product(self, form: UpdateProductsSchema) -> Dict:
+        """
+        Route to update a product.
+
+        **Parameters:**
+        - product_id: int - The id of the product.
+        - name: str - The name of the product.
+        - description: str - A description of the product.
+        - category: str - The category of the product.
+        - price: float - The price of the product.
+        - image_url: str - The URL of the product image.
+
+        **Returns:**
+        - A JSON response with a success message.
+        """
+        try:
+            product_id = form.product_id
+            name = form.name.title()
+            description = form.description.capitalize()
+            category = form.category.title()
+            price = form.price
+            image_url = form.image_url
+
+            if not all(
+                [product_id, name, description, category, price, image_url]
+            ):
+                raise ValueError("There are required fields that are empty.")
+
+            DB_APP.update_data_table(
+                Products,
+                {Products.id: product_id},
+                {
+                    Products.name: name,
+                    Products.description: description,
+                    Products.price: price,
+                    Products.image_url: image_url,
+                },
+            )
+
+            return {
+                "message": f"Product {product_id} updated successfully.",
             }
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))

@@ -46,3 +46,33 @@ class GetProductsByCategoryResponseSchema(BaseModel):
         description="Confirmation message returned when products are retrieved successfully.",
     )
     products: List = Field(description="List of all products in the category")
+
+
+class UpdateProductsSchema(BaseModel):
+    """
+    Schema for updating a product.
+    """
+
+    product_id: int = Field(description="The id of the product.")
+    name: str = Field(..., max_length=50, description="Name of the product")
+    description: str = Field(
+        ..., max_length=200, description="Description of the product"
+    )
+    category: str = Field(
+        ..., max_length=50, description="Category of the product"
+    )
+    price: float = Field(
+        ..., gt=0, description="Price of the product, must be greater than 0"
+    )
+    image_url: str = Field(..., description="URL of the product image.")
+
+
+class UpdateProductsResponseSchema(BaseModel):
+    """
+    Schema for the response after updating a product.
+    """
+
+    message: str = Field(
+        "Product updated successfully.",
+        description="Confirmation message after successful update.",
+    )
