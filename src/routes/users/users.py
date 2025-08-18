@@ -89,7 +89,7 @@ class UsersRoute(Route):
                 raise ValueError("Invalid username.")
 
             password_valid = self.hash_generator.verify_password(
-                password, user_record[0].password
+                password, user_record[0]["password"]
             )
 
             if not password_valid:
