@@ -10,7 +10,7 @@ It includes methods for setting up routes and initializing the application.
 from typing import Callable, List
 
 import uvicorn
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query
 
 from src.util.custom_error import CustomError
 
@@ -90,20 +90,6 @@ class FastApiHandler:
 
             raise CustomError(message, code) from e
 
-    def generate_dependencies(
-        self, dependencies: List[Callable]
-    ) -> List[Depends]:
-        """
-        Generate dependencies for the FastAPI application.
-        """
-        try:
-            return [Depends(dep) for dep in dependencies]
-        except Exception as e:
-            message = f"Error generating dependencies: {str(e)}"
-            code = 23
-
-            raise CustomError(message, code) from e
-
     def run_app(self) -> None:
         """
         Run the FastAPI application.
@@ -121,10 +107,31 @@ class FastApiHandler:
 
             raise CustomError(message, code) from e
 
+    @staticmethod
+    def generate_dependencies(dependencies: List[Callable]) -> List[Depends]:
+        """
+        Generate dependencies for the FastAPI application.
+        """
+        try:
+            return [Depends(dep) for dep in dependencies]
+        except Exception as e:
+            message = f"Error generating dependencies: {str(e)}"
+            code = 23
+
+            raise CustomError(message, code) from e
+
+    @staticmethod
     def raise_http_exception(
-        self, detail: str, status_code: int = 500
+        detail: str, status_code: int = 500
     ) -> HTTPException:
         """
         Raise an HTTPException with the specified status code and detail.
         """
         raise HTTPException(status_code=status_code, detail=detail)
+
+    @staticmethod
+    def get_query_parameter(description: str) -> Query:
+        """
+        Provides a query parameter.
+        """
+        return Query(..., description=description)
