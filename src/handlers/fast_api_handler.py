@@ -65,7 +65,7 @@ class FastApiHandler:
                 dependencies=(
                     []
                     if not dependencies
-                    else self._generate_dependencies(dependencies)
+                    else self.generate_dependencies(dependencies)
                 ),
             )
 
@@ -90,7 +90,7 @@ class FastApiHandler:
 
             raise CustomError(message, code) from e
 
-    def _generate_dependencies(
+    def generate_dependencies(
         self, dependencies: List[Callable]
     ) -> List[Depends]:
         """
