@@ -43,14 +43,14 @@ class ProductsRoute(Route):
             "register_product": {
                 Route.PATH: "/register_product",
                 Route.HTTP_TYPE: Route.POST,
-                Route.METHOD: self.register_product,
+                Route.METHOD: self._register_product,
                 Route.MODEL: RegisterProductsResponseSchema,
             },
         }
 
         return endpoints
 
-    async def register_product(self, form: RegisterProductsSchema) -> Dict:
+    async def _register_product(self, form: RegisterProductsSchema) -> Dict:
         """
         Route to register a product.
 
