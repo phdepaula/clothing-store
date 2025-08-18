@@ -112,7 +112,7 @@ class SqlAlchemyHandler:
         order_by: str = None,
         order_desc: bool = False,
         **filters,
-    ) -> List:
+    ) -> List[Dict]:
         """
         Selects data from the database with flexible filters and ordering.
 
@@ -186,7 +186,16 @@ class SqlAlchemyHandler:
 
                 query = query.order_by(column_order)
 
-            return query.all()
+            query_results = query.all()
+            final_results = []
+
+            for row in query_results:
+                dict_rows = row.__dict__
+                del dict_rows["_sa_instance_state"]
+
+                final_results.append(dict_rows)
+
+            return final_results
         except Exception as e:
             self._session.rollback()
 
