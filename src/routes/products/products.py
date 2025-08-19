@@ -11,6 +11,7 @@ from src.routes.route import Route
 from src.schemas.products.products import (
     DeleteProductsResponseSchema,
     DeleteProductsSchema,
+    FetchTop10ProductsByCategoryResponseSchema,
     GetProductsByCategoryResponseSchema,
     RegisterProductsResponseSchema,
     RegisterProductsSchema,
@@ -68,6 +69,12 @@ class ProductsRoute(Route):
                 Route.HTTP_TYPE: Route.DELETE,
                 Route.METHOD: self._delete_product,
                 Route.MODEL: DeleteProductsResponseSchema,
+            },
+            "fetch_top_10_products_by_category": {
+                Route.PATH: "/fetch_top_10_products_by_category",
+                Route.HTTP_TYPE: Route.GET,
+                Route.METHOD: self._fetch_top_10_products_by_category,
+                Route.MODEL: FetchTop10ProductsByCategoryResponseSchema,
             },
         }
 
@@ -210,6 +217,33 @@ class ProductsRoute(Route):
 
             return {
                 "message": f"Product {product_id} deleted successfully.",
+            }
+        except Exception as e:
+            self.fast_api_instance.raise_http_exception(str(e))
+
+    async def _fetch_top_10_products_by_category(
+        self,
+    ) -> Dict:
+        """
+        Route to fetch the top 10 products by category.
+
+        **Returns:**
+        - A JSON response with the top 10 products for all categories.
+        """
+        try:
+            products = DB_APP.select_data(Products)
+            product_by_category = {}
+
+            for product in products:
+                category = product["category"]
+                product_list = product_by_category.setdefault(category, [])
+
+                if len(product_list) < 10:
+                    product_list.append(product)
+
+            return {
+                "message": "Products grouped by category fetched successfully.",
+                "products": product_by_category,
             }
         except Exception as e:
             self.fast_api_instance.raise_http_exception(str(e))

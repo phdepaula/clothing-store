@@ -2,7 +2,7 @@
 Schema for product data validation in a clothing store application.
 """
 
-from typing import List
+from typing import Dict, List, Union
 
 from pydantic import BaseModel, Field
 
@@ -94,4 +94,19 @@ class DeleteProductsResponseSchema(BaseModel):
     message: str = Field(
         "Product deleted successfully.",
         description="Confirmation message after successful delete.",
+    )
+
+
+class FetchTop10ProductsByCategoryResponseSchema(BaseModel):
+    """
+    Schema for the response to fetch top 10 products \
+    by category.
+    """
+
+    message: str = Field(
+        "Products grouped by category fetched successfully.",
+        description="Confirmation message after successful fetch.",
+    )
+    products: Dict[str, List[Dict[str, Union[str, int]]]] = Field(
+        description="List with the top 10 products of each category."
     )
