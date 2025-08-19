@@ -33,7 +33,9 @@ class JwtHandler:
         """
         try:
             to_encode = data.copy()
-            expire = datetime.utcnow() + timedelta(minutes=minutes_to_expire)
+            expire = datetime.now().astimezone() + timedelta(
+                minutes=minutes_to_expire
+            )
             to_encode.update({"exp": expire})
 
             return jwt.encode(
