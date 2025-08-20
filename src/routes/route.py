@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 from src.util.custom_error import CustomError
 
 
@@ -35,6 +36,7 @@ class Route(ABC):
         self,
         fast_api_instance: FastApiHandler,
         jwt_instance: JwtHandler,
+        db_instance: SqlAlchemyHandler,
         name: str,
         dependencies: List[Callable] = None,
     ):
@@ -43,6 +45,7 @@ class Route(ABC):
         """
         self.fast_api_instance = fast_api_instance
         self.jwt_instance = jwt_instance
+        self.db_instance = db_instance
         self.name = name
         self.dependencies = [] if dependencies is None else dependencies
         self.route_app = self._create_app()

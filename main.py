@@ -24,6 +24,7 @@ if __name__ == "__main__":
         route_instance = route(
             fast_api_instance=FAST_API_APP,
             jwt_instance=JWT_APP,
+            db_instance=DB_APP,
         )
         route_instance.build_routes()
 

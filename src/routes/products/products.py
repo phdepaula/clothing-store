@@ -2,11 +2,13 @@
 Module for handling product-related routes in the application.
 """
 
+# pylint: disable=R0801
+
 from typing import Dict
 
-from src.app.db_app import DB_APP
 from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 from src.routes.route import Route
 from src.schemas.products.products import (
     DeleteProductsResponseSchema,
@@ -29,7 +31,10 @@ class ProductsRoute(Route):
     NAME = "products"
 
     def __init__(
-        self, fast_api_instance: FastApiHandler, jwt_instance: JwtHandler
+        self,
+        fast_api_instance: FastApiHandler,
+        jwt_instance: JwtHandler,
+        db_instance: SqlAlchemyHandler,
     ):
         """
         Initializes the ProductsRoute class.
@@ -37,6 +42,7 @@ class ProductsRoute(Route):
         super().__init__(
             fast_api_instance,
             jwt_instance,
+            db_instance,
             self.NAME,
             [self._token_dependency],
         )
@@ -111,7 +117,7 @@ class ProductsRoute(Route):
                 price=price,
                 image_url=image_url,
             )
-            DB_APP.insert_data(new_product)
+            self.db_instance.insert_data(new_product)
 
             return {
                 "message": "Product registered successfully.",
@@ -138,7 +144,7 @@ class ProductsRoute(Route):
             if not category:
                 raise ValueError("Category should be informed.")
 
-            products = DB_APP.select_data(
+            products = self.db_instance.select_data(
                 Products, category__eq=category.title()
             )
 
@@ -177,7 +183,7 @@ class ProductsRoute(Route):
             ):
                 raise ValueError("There are required fields that are empty.")
 
-            DB_APP.update_data_table(
+            self.db_instance.update_data_table(
                 Products,
                 {Products.id: product_id},
                 {
@@ -210,7 +216,7 @@ class ProductsRoute(Route):
             if not product_id:
                 raise ValueError("Product id should be informed.")
 
-            DB_APP.delete_data_table(
+            self.db_instance.delete_data_table(
                 Products,
                 {Products.id: product_id},
             )
@@ -231,7 +237,7 @@ class ProductsRoute(Route):
         - A JSON response with the top 10 products for all categories.
         """
         try:
-            products = DB_APP.select_data(Products)
+            products = self.db_instance.select_data(Products)
             product_by_category = {}
 
             for product in products:

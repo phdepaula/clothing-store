@@ -2,11 +2,13 @@
 Module for handling user-related routes.
 """
 
+# pylint: disable=R0801
+
 from typing import Dict
 
-from src.app.db_app import DB_APP
 from src.handlers.fast_api_handler import FastApiHandler
 from src.handlers.jwt_handler import JwtHandler
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 from src.routes.route import Route
 from src.schemas.users.users import (
     LoginUserResponseSchema,
@@ -28,12 +30,20 @@ class UsersRoute(Route):
     NAME = "users"
 
     def __init__(
-        self, fast_api_instance: FastApiHandler, jwt_instance: JwtHandler
+        self,
+        fast_api_instance: FastApiHandler,
+        jwt_instance: JwtHandler,
+        db_instance: SqlAlchemyHandler,
     ):
         """
         Initializes the UsersRoute class.
         """
-        super().__init__(fast_api_instance, jwt_instance, self.NAME)
+        super().__init__(
+            fast_api_instance,
+            jwt_instance,
+            db_instance,
+            self.NAME,
+        )
 
         self.hash_generator = HashGenerator()
 
@@ -83,7 +93,9 @@ class UsersRoute(Route):
             if not username or not password:
                 raise ValueError("Username and password are required.")
 
-            user_record = DB_APP.select_data(Users, username=username)
+            user_record = self.db_instance.select_data(
+                Users, username=username
+            )
 
             if not user_record:
                 raise ValueError("Invalid username.")
@@ -138,7 +150,7 @@ class UsersRoute(Route):
             new_user = Users(
                 username=username, password=hashed_password, role=role
             )
-            DB_APP.insert_data(new_user)
+            self.db_instance.insert_data(new_user)
 
             return {
                 "message": "User registered successfully.",
@@ -176,7 +188,7 @@ class UsersRoute(Route):
                 new_password
             )
 
-            DB_APP.update_data_table(
+            self.db_instance.update_data_table(
                 Users,
                 {Users.username: username},
                 {Users.role: new_role, Users.password: hashed_password},
