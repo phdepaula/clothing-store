@@ -85,6 +85,7 @@ class SqlAlchemyHandler:
         """
         if self._session:
             self._session.close()
+            self._session = None
 
     def insert_data(self, data: object) -> None:
         """
