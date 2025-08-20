@@ -8,8 +8,7 @@ It includes methods for creating, reading, updating, and deleting records in the
 from typing import Dict, List
 
 from sqlalchemy import and_, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 
 from src.util.custom_error import CustomError
