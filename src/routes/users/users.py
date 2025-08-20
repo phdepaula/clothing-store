@@ -93,7 +93,7 @@ class UsersRoute(Route):
             if not username or not password:
                 raise ValueError("Username and password are required.")
 
-            user_record = self.db_instance.select_data(
+            user_record = await self.db_instance.select_data(
                 Users, username=username
             )
 
@@ -150,7 +150,7 @@ class UsersRoute(Route):
             new_user = Users(
                 username=username, password=hashed_password, role=role
             )
-            self.db_instance.insert_data(new_user)
+            await self.db_instance.insert_data(new_user)
 
             return {
                 "message": "User registered successfully.",

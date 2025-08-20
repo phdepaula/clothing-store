@@ -117,7 +117,7 @@ class ProductsRoute(Route):
                 price=price,
                 image_url=image_url,
             )
-            self.db_instance.insert_data(new_product)
+            await self.db_instance.insert_data(new_product)
 
             return {
                 "message": "Product registered successfully.",
@@ -144,7 +144,7 @@ class ProductsRoute(Route):
             if not category:
                 raise ValueError("Category should be informed.")
 
-            products = self.db_instance.select_data(
+            products = await self.db_instance.select_data(
                 Products, category__eq=category.title()
             )
 
@@ -183,7 +183,7 @@ class ProductsRoute(Route):
             ):
                 raise ValueError("There are required fields that are empty.")
 
-            self.db_instance.update_data_table(
+            await self.db_instance.update_data_table(
                 Products,
                 {Products.id: product_id},
                 {
@@ -216,7 +216,7 @@ class ProductsRoute(Route):
             if not product_id:
                 raise ValueError("Product id should be informed.")
 
-            self.db_instance.delete_data_table(
+            await self.db_instance.delete_data_table(
                 Products,
                 {Products.id: product_id},
             )
@@ -237,7 +237,7 @@ class ProductsRoute(Route):
         - A JSON response with the top 10 products for all categories.
         """
         try:
-            products = self.db_instance.select_data(Products)
+            products = await self.db_instance.select_data(Products)
             product_by_category = {}
 
             for product in products:

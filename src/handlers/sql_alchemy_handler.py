@@ -87,7 +87,7 @@ class SqlAlchemyHandler:
             self._session.close()
             self._session = None
 
-    def insert_data(self, data: object) -> None:
+    async def insert_data(self, data: object) -> None:
         """
         Inserts data into the database.
         """
@@ -106,7 +106,7 @@ class SqlAlchemyHandler:
         finally:
             self._close_session()
 
-    def select_data(
+    async def select_data(
         self,
         model: object,
         order_by: str = None,
@@ -217,7 +217,7 @@ class SqlAlchemyHandler:
 
         return desired_filter
 
-    def update_data_table(
+    async def update_data_table(
         self, table: object, filter_update: Dict, new_data: Dict
     ) -> int:
         """
@@ -254,7 +254,9 @@ class SqlAlchemyHandler:
         finally:
             self._close_session()
 
-    def delete_data_table(self, table: object, filter_delete: dict) -> int:
+    async def delete_data_table(
+        self, table: object, filter_delete: dict
+    ) -> int:
         """
         Deletes data from the given table based on filters.
 
