@@ -1,0 +1,53 @@
+name: Python CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Python version
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3. Cache pip to speed up future runs
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # 5. Run pylint and save report to a file (job will fail if pylint finds errors)
+      - name: Run pylint
+        run: pylint src > pylint-report.txt
+
+      # 6. Upload pylint report as an artifact (always runs even if pylint fails)
+      - name: Upload pylint report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pylint-report
+          path: pylint-report.txt
+
+      # 7. Run pytest
+      - name: Run pytest
+        run: pytest --maxfail=1 --disable-warnings -v
