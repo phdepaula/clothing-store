@@ -32,7 +32,9 @@ class RegisterProductsResponseSchema(BaseModel):
 
     message: str = Field(
         "Product registered successfully.",
-        description="Confirmation message after successful product registration",
+        description=(
+            "Confirmation message after successful product registration"
+        ),
     )
 
 
@@ -43,7 +45,10 @@ class GetProductsByCategoryResponseSchema(BaseModel):
 
     message: str = Field(
         "Products successfully obtained!",
-        description="Confirmation message returned when products are retrieved successfully.",
+        description=(
+            "Confirmation message returned when products "
+            + "are retrieved successfully."
+        ),
     )
     products: List = Field(description="List of all products in the category")
 

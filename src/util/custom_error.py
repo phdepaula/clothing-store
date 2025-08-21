@@ -1,8 +1,10 @@
 """
 Module for custom error handling in the application.
 
-This module defines a custom error class for handling application-specific errors.
-It extends the built-in Exception class to provide additional context and functionality.
+This module defines a custom error class for handling
+application-specific errors.
+It extends the built-in Exception class to provide
+additional context and functionality.
 """
 
 

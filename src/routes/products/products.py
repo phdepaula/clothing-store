@@ -25,7 +25,8 @@ from src.tables.products import Products
 
 class ProductsRoute(Route):
     """
-    Class to define and manage product-related routes for the FastAPI application.
+    Class to define and manage product-related
+    routes for the FastAPI application.
     """
 
     NAME = "products"
@@ -58,7 +59,7 @@ class ProductsRoute(Route):
                 Route.METHOD: self._register_product,
                 Route.MODEL: RegisterProductsResponseSchema,
             },
-            "get_products_by_categoryaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+            "get_products_by_category": {
                 Route.PATH: "/get_products_by_category",
                 Route.HTTP_TYPE: Route.GET,
                 Route.METHOD: self._get_products_by_category,
@@ -248,7 +249,9 @@ class ProductsRoute(Route):
                     product_list.append(product)
 
             return {
-                "message": "Products grouped by category fetched successfully.",
+                "message": (
+                    "Products grouped by category fetched successfully."
+                ),
                 "products": product_by_category,
             }
         except Exception as e:
