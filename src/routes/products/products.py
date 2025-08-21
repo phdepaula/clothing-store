@@ -58,7 +58,7 @@ class ProductsRoute(Route):
                 Route.METHOD: self._register_product,
                 Route.MODEL: RegisterProductsResponseSchema,
             },
-            "get_products_by_category": {
+            "get_products_by_categoryaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
                 Route.PATH: "/get_products_by_category",
                 Route.HTTP_TYPE: Route.GET,
                 Route.METHOD: self._get_products_by_category,
