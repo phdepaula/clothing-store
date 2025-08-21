@@ -70,6 +70,9 @@ def test_get_endpoints(users_route):
     assert "update_user" in endpoints
 
 
+# -------------------- login user --------------------
+
+
 @pytest.mark.asyncio
 async def test_login_user_success(users_route, mock_db):
     """
@@ -133,6 +136,9 @@ async def test_login_user_invalid_password(users_route, mock_db):
     assert exc_info.value.detail == "Invalid password."
 
 
+# -------------------- register user --------------------
+
+
 @pytest.mark.asyncio
 async def test_register_user_success(users_route):
     """
@@ -173,6 +179,9 @@ async def test_register_user_invalid_role(users_route):
 
     assert exc_info.value.status_code == 500
     assert exc_info.value.detail == "Role must be either 'admin' or 'user'."
+
+
+# -------------------- update user --------------------
 
 
 @pytest.mark.asyncio
