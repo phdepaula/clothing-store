@@ -1,2 +1,6 @@
 [MESSAGE CONTROL]
 disable=E0401,R0903,R0913,R0917,W0718
+
+[FORMAT]
+# Maximum number of characters on a single line.
+max-line-length=79
