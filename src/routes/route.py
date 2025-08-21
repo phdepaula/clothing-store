@@ -110,12 +110,12 @@ class Route(ABC):
             token = credentials.credentials if credentials else None
 
             if not token:
-                raise CustomError("No token provided", 34)
+                raise ValueError("No token provided")
 
             payload = self.jwt_instance.decode_jwt(token)
 
             return payload
-        except CustomError as e:
+        except Exception as e:
             message = f"Error in token_dependency: {str(e)}"
             code = 52
 
