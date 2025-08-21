@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       # 3. Cache pip to speed up future runs
       - name: Cache pip
@@ -43,7 +43,7 @@ jobs:
       # 6. Upload pylint report as an artifact (always runs even if pylint fails)
       - name: Upload pylint report
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pylint-report
           path: pylint-report.txt
