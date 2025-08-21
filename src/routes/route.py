@@ -103,8 +103,10 @@ class Route(ABC):
         self, credentials: HTTPAuthorizationCredentials = Depends(HTTPBearer())
     ) -> Dict:
         """
-        Dependency to extract and decode the JWT token from the HTTP authorization credentials.
-        Raises CustomError if no token is provided or if the token is invalid.
+        Dependency to extract and decode the JWT token from the
+        HTTP authorization credentials.
+        Raises CustomError if no token is provided or
+        if the token is invalid.
         """
         try:
             token = credentials.credentials if credentials else None

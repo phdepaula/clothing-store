@@ -1,6 +1,7 @@
 """
 Module responsible for generating hash values for various purposes.
-This module is used to create secure hashes for passwords and other sensitive data.
+This module is used to create secure hashes for passwords
+and other sensitive data.
 """
 
 from passlib.context import CryptContext

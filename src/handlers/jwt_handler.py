@@ -1,7 +1,8 @@
 """
 Class to handle JWT operations.
 
-This class provides methods to create and verify JWT tokens for user authentication.
+This class provides methods to create and verify JWT tokens
+for user authentication.
 """
 
 from datetime import datetime, timedelta

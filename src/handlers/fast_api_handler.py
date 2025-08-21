@@ -52,12 +52,14 @@ class FastApiHandler:
         self, prefix: str, dependencies: List[Callable] = None
     ) -> APIRouter:
         """
-        Create and return a FastAPI router with the specified prefix and dependencies.
+        Create and return a FastAPI router with the specified prefix
+        and dependencies.
         """
         try:
             if self.app is None:
                 raise ValueError(
-                    "FastAPI application is not created yet. Call create_app() first."
+                    "FastAPI application is not created yet. "
+                    + "Call create_app() first."
                 )
 
             protected_router = APIRouter(
@@ -97,7 +99,8 @@ class FastApiHandler:
         try:
             if self.app is None:
                 raise ValueError(
-                    "FastAPI application is not created yet. Call create_app() first."
+                    "FastAPI application is not created yet. "
+                    + "Call create_app() first."
                 )
 
             uvicorn.run(self.app, host=self.host, port=self.port)

@@ -1,8 +1,10 @@
 """
 Class to handle SQLAlchemy operations for the application.
 
-This class provides methods to interact with the database using SQLAlchemy ORM.
-It includes methods for creating, reading, updating, and deleting records in the database.
+This class provides methods to interact with the database
+using SQLAlchemy ORM.
+It includes methods for creating, reading, updating
+and deleting records in the database.
 """
 
 from typing import Dict, List
@@ -16,7 +18,8 @@ from src.util.custom_error import CustomError
 
 class SqlAlchemyHandler:
     """
-    SqlAlchemyHandler is responsible for managing the SQLAlchemy session and engine.
+    SqlAlchemyHandler is responsible for managing
+    the SQLAlchemy session and engine.
     """
 
     BASE = declarative_base()
@@ -43,7 +46,10 @@ class SqlAlchemyHandler:
                 connect_args={"check_same_thread": False},
             )
         except Exception as e:
-            message = f"Error creating engine with database URL {database_url}: {str(e)}"
+            message = (
+                "Error creating engine with database URL"
+                + f" {database_url}: {str(e)}"
+            )
             code = 1
 
             raise CustomError(message, code) from e
@@ -130,7 +136,13 @@ class SqlAlchemyHandler:
             order_desc=True      -> Descending order
 
         Example:
-            select_data(User, name__like="Ped", age__gt=18, order_by="age", order_desc=True)
+            select_data(
+            User,
+            name__like="Ped",
+            age__gt=18,
+            order_by="age",
+            order_desc=True
+        )
         """
         # pylint: disable=R0914,R0912
         self._create_session()
@@ -148,7 +160,8 @@ class SqlAlchemyHandler:
 
                 if not hasattr(model, attr):
                     raise ValueError(
-                        f"Attribute '{attr}' does not exist in model '{model.__name__}'."
+                        f"Attribute '{attr}' does not exist in model '"
+                        + f"{model.__name__}'."
                     )
 
                 column = getattr(model, attr)
@@ -176,7 +189,8 @@ class SqlAlchemyHandler:
             if order_by:
                 if not hasattr(model, order_by):
                     raise ValueError(
-                        f"Attribute '{order_by}' does not exist in model '{model.__name__}'."
+                        f"Attribute '{order_by}' does not exist in model '"
+                        + f"{model.__name__}'."
                     )
 
                 column_order = getattr(model, order_by)
