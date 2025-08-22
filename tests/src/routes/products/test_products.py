@@ -2,20 +2,10 @@
 Tests for src/routes/products/products.py
 """
 
-import os
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import HTTPException
-
-os.environ["DB_URL"] = "sqlite:///:memory:"
-os.environ["API_TITLE"] = "Clothing Store API"
-os.environ["API_VERSION"] = "1.0.0"
-os.environ["API_DESCRIPTION"] = "API for testing"
-os.environ["API_HOST"] = "0.0.0.0"
-os.environ["API_PORT"] = "8000"
-os.environ["SECRET_KEY"] = "CLOTHING_STORE_SECRET"
-os.environ["ALGORITHM"] = "HS256"
 
 from src.routes.products.products import ProductsRoute
 from src.schemas.products.products import (
