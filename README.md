@@ -22,7 +22,7 @@ It provides endpoints for managing **users** and **products**, including registr
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/phdepaula/clothing-store.git
+git clone https://github.com/phdepaula/clothing-store-backend.git
 ```
 
 ### 2. Create a virtual environment
