@@ -11,12 +11,10 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 
-from src.app.db_app import DB_APP
-
-BASE = DB_APP.BASE
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 
 
-class Products(BASE):
+class Products(SqlAlchemyHandler.BASE):
     """
     Class representing the products table in the database.
     """

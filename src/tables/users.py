@@ -10,12 +10,10 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 
-from src.app.db_app import DB_APP
-
-BASE = DB_APP.BASE
+from src.handlers.sql_alchemy_handler import SqlAlchemyHandler
 
 
-class Users(BASE):
+class Users(SqlAlchemyHandler.BASE):
     """
     Class representing the users table in the database.
     """
