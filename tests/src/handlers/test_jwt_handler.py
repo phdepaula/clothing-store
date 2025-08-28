@@ -21,7 +21,6 @@ def test_create_access_token():
     data = {"sub": "user_test"}
 
     access_token = instance.create_access_token(data)
-    print(access_token)
 
     assert isinstance(access_token, str) is True
 
@@ -53,7 +52,7 @@ def test_decode_jwt():
     instance = create_jwt_instance("test_decode_jwt", "HS256")
     data = {"sub": "user_decode_jwt"}
     access_token = instance.create_access_token(data)
-    print(access_token)
+
     payload = instance.decode_jwt(access_token)
 
     assert payload["sub"] == "user_decode_jwt"
